@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>إدارة المخيم</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{--bg:#f5f3ee;--card:#fff;--tx:#1f2a24;--mu:#6b756f;--pr:#1d6b4f;--pr2:#e3f1ea;--bd:#dcd8cd;--dn:#b3392f;--wn:#b9770e;--wn2:#fbf0dc;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#151a17;--card:#1f2622;--tx:#e8ece9;--mu:#98a39c;--pr:#4cb888;--pr2:#22352b;--bd:#33403a;--dn:#ef7d72;--wn:#e7aa4d;--wn2:#3a2f1a}}
+:root[data-theme="dark"]{--bg:#151a17;--card:#1f2622;--tx:#e8ece9;--mu:#98a39c;--pr:#4cb888;--pr2:#22352b;--bd:#33403a;--dn:#ef7d72;--wn:#e7aa4d;--wn2:#3a2f1a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Tahoma,"Segoe UI",Arial,sans-serif;line-height:1.6}
+.w{max-width:960px;margin:auto;padding:16px}
+h1{margin:0;font-size:22px;color:var(--pr)}
+header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.st{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:12px}
+.st div{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px;text-align:center}
+.st b{display:block;font-size:24px;color:var(--pr)}.st span{font-size:13px;color:var(--mu)}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+input,select,textarea{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:8px;width:100%}
+.bar input{flex:1;min-width:160px;width:auto}.bar select{width:auto}
+button{font:inherit;cursor:pointer;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;padding:7px 12px}
+button.p{background:var(--pr);border-color:var(--pr);color:#fff}
+button.d{color:var(--dn);border-color:var(--dn)}
+.tabs{display:flex;gap:6px;margin-bottom:12px}.tabs button.on{background:var(--pr2);border-color:var(--pr);color:var(--pr);font-weight:bold}
+.f{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:10px}
+.f h3{margin:0 0 4px;font-size:17px}
+.mt{color:var(--mu);font-size:13px;display:flex;gap:12px;flex-wrap:wrap}
+.tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:99px;background:var(--pr2);color:var(--pr);margin-inline-start:6px}
+.tag.w{background:var(--wn2);color:var(--wn);max-width:none;padding:1px 8px}
+.ac{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+details{margin-top:8px;font-size:14px}summary{cursor:pointer;color:var(--pr)}
+details ul{margin:6px 0;padding-inline-start:20px}
+dialog{border:1px solid var(--bd);border-radius:12px;background:var(--bg);color:var(--tx);width:min(680px,94vw);max-height:90vh;padding:16px}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:8px}
+label{font-size:13px;color:var(--mu);display:block}
+fieldset{border:1px solid var(--bd);border-radius:8px;margin:10px 0;padding:8px}legend{color:var(--pr);font-weight:bold;padding:0 6px}
+.r{display:grid;grid-template-columns:2fr 1.3fr 1.3fr auto;gap:6px;margin-bottom:6px}
+.r.b{grid-template-columns:2fr 1.2fr 2fr auto}
+.r.m{grid-template-columns:2fr 1.1fr 1.2fr 1.3fr auto}
+@media(max-width:560px){.r,.r.b,.r.m{grid-template-columns:1fr 1fr}}
+table{width:100%;border-collapse:collapse;font-size:14px;background:var(--card)}th,td{border:1px solid var(--bd);padding:6px 8px;text-align:right;white-space:nowrap}th{background:var(--pr2);color:var(--pr)}
+.er{color:var(--dn);font-size:13px;min-height:20px}
+.em{text-align:center;color:var(--mu);padding:30px}
+.tw{overflow-x:auto}
+#lg{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}
+#lg .c{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:24px;width:min(380px,100%)}
+#lg h2{margin:0 0 4px;color:var(--pr)}#lg label{margin-top:10px}#lg .em2{font-size:13px;color:var(--mu);margin:0 0 6px}
+#lg button.p{width:100%;margin-top:14px;padding:10px}#lg a{color:var(--mu);font-size:13px;cursor:pointer;display:block;text-align:center;margin-top:12px;text-decoration:underline}
+.ck{width:18px;height:18px;vertical-align:middle;margin-inline-end:8px;accent-color:var(--pr)}
+#sb{display:flex;gap:8px;flex-wrap:wrap;align-items:center;width:100%;background:var(--pr2);border:1px solid var(--pr);border-radius:8px;padding:8px}
+#sb b{color:var(--pr)}
+</style>
+</head>
+<body>
+<div class="w" id="app" style="display:none">
+<header><h1>🏕️ إدارة المخيم – سجل الأسر</h1>
+<div><button class="p" onclick="xl()">📊 تصدير Excel</button> <button class="p" onclick="$('xi').click()">📥 استيراد Excel</button> <button onclick="exp()">نسخة احتياطية</button> <button onclick="document.getElementById('imp').click()">استعادة نسخة</button> <button onclick="openPw()">🔑 كلمة المرور</button> <button class="d" onclick="logout()">🔒 خروج</button><input type="file" id="xi" accept=".xlsx,.xls,.csv" hidden><input type="file" id="imp" accept=".json" hidden></div></header>
+<div class="st" id="st"></div>
+<div class="tabs"><button id="t1" class="on" onclick="tab(1)">الأسر</button><button id="t3" onclick="tab(3)">الأفراد حسب العمر</button><button id="t2" onclick="tab(2)">سجل الأسر المحذوفة</button></div>
+<div class="bar" id="bar">
+<input id="q" placeholder="بحث بالاسم أو رقم الهوية أو الجوال" oninput="draw()">
+<select id="fs" onchange="draw()"><option value="">كل الحالات</option><option value="pending">قيد الانتظار</option><option value="approved">مقبولة</option></select>
+<button class="p" onclick="openF()">+ إضافة أسرة</button>
+<div id="fx" style="display:flex;gap:8px;flex-wrap:wrap;width:100%;align-items:center"><select id="fso" onchange="draw()"></select>
+<span style="font-size:13px;color:var(--mu)">عدد الأفراد من</span><input id="nmin" type="number" min="1" style="width:80px" oninput="draw()"><span style="font-size:13px;color:var(--mu)">إلى</span><input id="nmax" type="number" min="1" style="width:80px" oninput="draw()">
+<button onclick="rf()">مسح التصفية</button><span id="cn" style="font-size:13px;color:var(--mu)"></span></div>
+<div id="sb"><span>المحددون: <b id="sc">0</b></span><button onclick="selVis()">تحديد كل الظاهر</button><button onclick="selClr()">إلغاء التحديد</button><button class="p" onclick="openBen()">📤 تصدير المحددين مع الاستفادة</button></div></div>
+<div id="ax" style="display:none;flex-wrap:wrap;gap:8px;width:100%;align-items:center"><span style="font-size:13px;color:var(--mu)">العمر من</span><input id="amin" type="number" min="0" step="any" style="width:80px" oninput="draw()"><span style="font-size:13px;color:var(--mu)">إلى أقل من</span><input id="amax" type="number" min="0" step="any" style="width:80px" oninput="draw()">
+<select id="au" onchange="draw()" style="width:auto"><option value="12">سنة</option><option value="1">شهر</option></select><button onclick="rfa()">مسح</button><button class="p" onclick="xm()">📤 تصدير Excel</button></div>
+<datalist id="il2"></datalist>
+<div id="list"></div>
+</div>
+
+<div id="lg"><div class="c" id="lc"></div></div>
+<dialog id="pw"><h3 style="margin-top:0">تغيير كلمة المرور</h3><label>كلمة المرور الحالية</label><input id="p0" type="password" autocomplete="current-password"><label>كلمة المرور الجديدة (6 أحرف على الأقل)</label><input id="p1" type="password" autocomplete="new-password"><label>تأكيد الجديدة</label><input id="p2" type="password" autocomplete="new-password"><div class="er" id="pe"></div><div class="ac"><button class="p" onclick="chPw()">حفظ</button><button onclick="pw.close()">إلغاء</button></div></dialog>
+<dialog id="dlg"><div id="fm"></div></dialog>
+<dialog id="db"><h3 style="margin-top:0">تصدير المحددين مع الاستفادة</h3><p id="bn" style="margin:0 0 8px"></p>
+<div class="g"><div><label>ما استفادت منه الأسر</label><input id="bi" list="il2" placeholder="مثال: طرد غذائي" oninput="chkDup()"></div><div><label>التاريخ</label><input id="bd" type="date"></div></div>
+<label>ملاحظة (اختياري)</label><input id="bt"><div class="er" id="bw" style="color:var(--wn)"></div>
+<label style="display:flex;gap:6px;align-items:center;color:var(--tx);margin:8px 0"><input type="checkbox" id="br" checked style="width:auto"> تسجيل هذه الاستفادة أيضاً في سجل كل أسرة</label>
+<div class="er" id="be"></div><div class="ac"><button class="p" onclick="doBen()">تصدير Excel</button><button onclick="db.close()">إلغاء</button></div></dialog>
+<dialog id="dd"><h3 style="margin-top:0">حذف الأسرة</h3><p id="dn"></p><label>سبب الحذف</label><input id="rs" placeholder="مثال: غادرت المخيم"><div class="ac"><button class="d" onclick="confDel()">تأكيد الحذف</button><button onclick="dd.close()">إلغاء</button></div></dialog>
+
+<script src="xlsx.full.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const KEY='camp_v1';
+let S={families:[],archive:[]},view=1,editId=null,delId=null;
+try{const x=localStorage.getItem(KEY);if(x)S=JSON.parse(x)}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nd=s=>String(s||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).trim();
+const sel=new Set();let vis=[];
+function ageM(b){if(!b)return null;const t=new Date(),d=new Date(b);if(isNaN(d))return null;return Math.max(0,(t.getFullYear()-d.getFullYear())*12+t.getMonth()-d.getMonth()-(t.getDate()<d.getDate()?1:0))}
+function ageTxt(b){const m=ageM(b);if(m===null)return '—';if(m<24)return m+' شهر';const y=Math.floor(m/12),r=m%12;return y+' سنة'+(r?' و '+r+' شهر':'')}
+function rfa(){$('amin').value='';$('amax').value='';$('q').value='';draw()}
+function peo(f){const L=[{name:full(f),nid:f.nid,birth:f.headBirth,rel:'الزوج (رب الأسرة)'}];if(f.wife||f.wifeBirth)L.push({name:f.wife||'الزوجة',nid:f.wifeNid,birth:f.wifeBirth,rel:'الزوجة'});return L.concat(f.members)}
+function memList(){const q=nd($('q').value).toLowerCase(),u=parseFloat($('au').value),a=parseFloat($('amin').value),b=parseFloat($('amax').value),lo=isNaN(a)?null:a*u,hi=isNaN(b)?null:b*u;const R=[];
+S.families.forEach(f=>peo(f).forEach(m=>{const g=ageM(m.birth);if((lo!==null||hi!==null)&&g===null)return;if(lo!==null&&g<lo)return;if(hi!==null&&g>=hi)return;
+if(q&&!(m.name+m.nid+full(f)+f.nid).toLowerCase().includes(q))return;R.push({f,m,g})}));return R.sort((x,y)=>(x.g??1e9)-(y.g??1e9))}
+function memView(){const R=memList();if(!R.length)return '<div class="em">لا يوجد أفراد مطابقون (تأكد من إدخال تاريخ ميلاد الأفراد في بيانات الأسرة)</div>';
+return '<p style="color:var(--mu);font-size:13px">عدد الأفراد: '+R.length+'</p><div class="tw"><table><tr><th>الفرد</th><th>الهوية</th><th>تاريخ الميلاد</th><th>العمر</th><th>القرابة</th><th>رب الأسرة</th><th>هويته</th><th>جواله</th></tr>'+R.map(({f,m})=>`<tr><td>${esc(m.name)}</td><td>${esc(m.nid)}</td><td>${esc(m.birth)}</td><td>${ageTxt(m.birth)}</td><td>${esc(m.rel)}</td><td>${esc(full(f))}</td><td>${esc(f.nid)}</td><td>${esc(f.phone)}</td></tr>`).join('')+'</table></div>'}
+function xm(){if(!window.XLSX){alert('تعذر تحميل مكتبة Excel');return}const R=memList();if(!R.length){alert('لا يوجد أفراد للتصدير');return}
+const rows=[['اسم رب الأسرة','رقم هويته','رقم جواله','عدد أفراد الأسرة','اسم الزوجة','رقم هوية الزوجة','اسم الفرد','رقم هوية الفرد','تاريخ الميلاد','العمر','صلة القرابة','تاريخ ميلاد الزوج','تاريخ ميلاد الزوجة']].concat(R.map(({f,m})=>[full(f),f.nid,f.phone,cnt(f),f.wife||'',f.wifeNid||'',m.name,m.nid||'',m.birth||'',ageTxt(m.birth),m.rel||'',f.headBirth||'',f.wifeBirth||'']));
+const ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=[30,14,14,12,26,15,26,15,13,14,12,16,16].map(w=>({wch:w}));ws['!views']=[{RTL:true}];
+const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'الأفراد');saveFile('camp-members-'+today()+'.xlsx',XLSX.write(wb,{bookType:'xlsx',type:'array'}))}
+const cnt=f=>Math.max(f.size||0,f.members.length+1);
+const full=f=>[f.first,f.father,f.grand,f.last].join(' ');
+const today=()=>new Date().toISOString().slice(0,10);
+const SOC=['متزوج/ة','أرمل/ة','مطلق/ة','منفصل/ة','أعزب/عزباء (يعيل أسرة)','أخرى'];
+const ITEMS=['طرد غذائي','بطانيات','فرشات','خيمة','مياه','مساعدة نقدية','ملابس','أدوية','كسوة شتوية','أدوات نظافة'];
+
+$('fso').innerHTML='<option value="">كل الحالات الاجتماعية</option>'+SOC.map(x=>`<option>${x}</option>`).join('');
+function updSel(){$('sc').textContent=sel.size}
+function tg(id,on){on?sel.add(id):sel.delete(id);updSel()}
+function selVis(){vis.forEach(i=>sel.add(i));draw()}
+function selClr(){sel.clear();draw()}
+function rf(){$('q').value='';$('fs').value='';$('fso').value='';$('nmin').value='';$('nmax').value='';draw()}
+function tab(n){view=n;const on=(id,c)=>$(id).style.display=c?'flex':'none';on('sb',n==1);on('fx',n==1);on('ax',n==3);
+[1,2,3].forEach(k=>$('t'+k).classList.toggle('on',n==k));$('fs').style.display=n==1?'':'none';document.querySelector('.bar .p').style.display=n==1?'':'none';draw()}
+function stats(){const F=S.families;$('st').innerHTML=[[F.length,'إجمالي الأسر'],[F.filter(f=>f.status=='pending').length,'قيد الانتظار'],[F.filter(f=>f.status=='approved').length,'مقبولة'],[F.reduce((a,f)=>a+cnt(f),0),'إجمالي الأفراد'],[S.archive.length,'محذوفة']].map(a=>`<div><b>${a[0]}</b><span>${a[1]}</span></div>`).join('')}
+function draw(){stats();updSel();const q=nd($('q').value).toLowerCase(),fs=$('fs').value;let h='';
+if(view==1){const so=$('fso').value,mn=parseInt(nd($('nmin').value))||0,mx=parseInt(nd($('nmax').value))||0;
+const L=S.families.filter(f=>(!fs||f.status==fs)&&(!so||f.social==so)&&(!mn||cnt(f)>=mn)&&(!mx||cnt(f)<=mx)&&(!q||(full(f)+f.nid+f.phone+(f.tent||'')).toLowerCase().includes(q)));
+$('cn').textContent='النتائج: '+L.length+' أسرة';vis=L.map(f=>f.id);
+h=L.length?L.map(card).join(''):'<div class="em">لا توجد أسر مطابقة</div>'}
+else if(view==2){const L=S.archive.filter(f=>!q||(full(f)+f.nid+f.phone).toLowerCase().includes(q));
+h=L.length?L.map(a=>`<div class="f"><h3>${esc(full(a))}</h3><div class="mt"><span>هوية: ${esc(a.nid)}</span><span>جوال: ${esc(a.phone)}</span><span>${esc(a.social)}</span><span>أفراد: ${cnt(a)}</span></div>
+<div class="mt" style="margin-top:4px"><span>تاريخ الحذف: ${esc(a.deletedAt)}</span><span>السبب: ${esc(a.reason||'غير مذكور')}</span></div>
+${det(a)}<div class="ac"><button onclick="restore('${a.id}')">استرجاع</button><button class="d" onclick="purge('${a.id}')">حذف نهائي من السجل</button></div></div>`).join(''):'<div class="em">سجل المحذوفين فارغ</div>'}
+if(view==3)h=memView();$('list').innerHTML=h}
+function det(f){return `<details><summary>الأفراد (${f.members.length}) والمساعدات (${f.benefits.length})</summary>
+<b>أفراد الأسرة:</b><ul>${f.members.map(m=>`<li>${esc(m.name)} – ${esc(m.rel)}${m.nid?' – هوية '+esc(m.nid):''}${m.birth?' – ميلاد '+esc(m.birth)+' ('+ageTxt(m.birth)+')':''}</li>`).join('')||'<li>لا يوجد</li>'}</ul>
+<b>ما استفادت منه الأسرة:</b><ul>${f.benefits.map(b=>`<li>${esc(b.item)} – ${esc(b.date)}${b.note?' ('+esc(b.note)+')':''}</li>`).join('')||'<li>لا يوجد</li>'}</ul></details>`}
+function card(f){const p=f.status=='pending';return `<div class="f"><h3><input type="checkbox" class="ck" ${sel.has(f.id)?'checked':''} onchange="tg('${f.id}',this.checked)">${esc(full(f))}<span class="tag ${p?'w':''}">${p?'قيد الانتظار':'مقبولة'}</span></h3>
+<div class="mt"><span>هوية: ${esc(f.nid)}</span><span>جوال: ${esc(f.phone)}</span><span>${esc(f.social)}</span><span>الأفراد: ${cnt(f)}</span>${f.wife?`<span>الزوجة: ${esc(f.wife)}${f.wifeNid?' ('+esc(f.wifeNid)+')':''}</span>`:''}${f.headBirth?`<span>ميلاد رب الأسرة: ${esc(f.headBirth)} (${ageTxt(f.headBirth)})</span>`:''}${f.wifeBirth?`<span>ميلاد الزوجة: ${esc(f.wifeBirth)} (${ageTxt(f.wifeBirth)})</span>`:''}${f.tent?`<span>خيمة/موقع: ${esc(f.tent)}</span>`:''}</div>
+${det(f)}<div class="ac">${p?`<button class="p" onclick="approve('${f.id}')">قبول الأسرة</button>`:`<button onclick="pend('${f.id}')">إعادة للانتظار</button>`}
+<button onclick="openF('${f.id}')">تعديل</button><button class="d" onclick="askDel('${f.id}')">حذف</button></div></div>`}
+function approve(id){S.families.find(f=>f.id==id).status='approved';save();draw()}
+function pend(id){S.families.find(f=>f.id==id).status='pending';save();draw()}
+function askDel(id){delId=id;$('dn').textContent='سيتم نقل أسرة '+full(S.families.find(f=>f.id==id))+' إلى سجل المحذوفين.';$('rs').value='';$('dd').showModal()}
+function confDel(){const i=S.families.findIndex(f=>f.id==delId);const f=S.families.splice(i,1)[0];sel.delete(f.id);f.deletedAt=today();f.reason=$('rs').value.trim();S.archive.unshift(f);save();$('dd').close();draw()}
+function restore(id){const i=S.archive.findIndex(f=>f.id==id),f=S.archive[i];if(S.families.some(x=>x.nid==f.nid)){alert('توجد أسرة مسجلة بنفس رقم الهوية، لا يمكن الاسترجاع');return}S.archive.splice(i,1);delete f.deletedAt;delete f.reason;S.families.push(f);save();draw()}
+function purge(id){if(confirm('حذف نهائي من السجل؟')){S.archive=S.archive.filter(f=>f.id!=id);save();draw()}}
+
+function mrow(m={}){return `<div class="r m"><input placeholder="اسم الفرد" value="${esc(m.name)}"><input placeholder="صلة القرابة" value="${esc(m.rel)}"><input placeholder="رقم الهوية (9 أرقام)" inputmode="numeric" maxlength="9" value="${esc(m.nid)}"><input type="date" title="تاريخ الميلاد" value="${esc(m.birth)}"><button class="d" type="button" onclick="this.parentNode.remove()">✕</button></div>`}
+function brow(b={}){return `<div class="r b"><input list="il" placeholder="نوع المساعدة" value="${esc(b.item)}"><input type="date" value="${esc(b.date||today())}"><input placeholder="ملاحظة" value="${esc(b.note)}"><button class="d" type="button" onclick="this.parentNode.remove()">✕</button></div>`}
+function openF(id){editId=id||null;const f=id?S.families.find(x=>x.id==id):{members:[],benefits:[],social:SOC[0],status:'pending'};
+$('fm').innerHTML=`<h3 style="margin-top:0">${id?'تعديل بيانات الأسرة':'إضافة أسرة جديدة'}</h3>
+<div class="g"><div><label>الاسم</label><input id="a1" value="${esc(f.first)}"></div><div><label>اسم الأب</label><input id="a2" value="${esc(f.father)}"></div><div><label>اسم الجد</label><input id="a3" value="${esc(f.grand)}"></div><div><label>اسم العائلة</label><input id="a4" value="${esc(f.last)}"></div></div>
+<div class="g"><div><label>رقم الهوية (9 أرقام)</label><input id="a5" inputmode="numeric" maxlength="9" value="${esc(f.nid)}"></div><div><label>رقم الجوال (10 أرقام)</label><input id="a6" inputmode="numeric" maxlength="10" value="${esc(f.phone)}"></div>
+<div><label>الحالة الاجتماعية للأسرة</label><select id="a7">${SOC.map(s=>`<option ${s==f.social?'selected':''}>${s}</option>`).join('')}</select></div>
+<div><label>رقم الخيمة / الموقع</label><input id="a8" value="${esc(f.tent)}"></div>
+<div><label>اسم الزوجة (رباعي)</label><input id="b1" value="${esc(f.wife)}"></div><div><label>رقم هوية الزوجة (9 أرقام)</label><input id="b2" inputmode="numeric" maxlength="9" value="${esc(f.wifeNid)}"></div>
+<div><label>تاريخ ميلاد الزوج (رب الأسرة)</label><input id="b3" type="date" value="${esc(f.headBirth)}"></div><div><label>تاريخ ميلاد الزوجة</label><input id="b4" type="date" value="${esc(f.wifeBirth)}"></div>
+<div><label>حالة الطلب</label><select id="a9"><option value="pending" ${f.status=='pending'?'selected':''}>قيد الانتظار</option><option value="approved" ${f.status=='approved'?'selected':''}>مقبولة</option></select></div></div>
+<fieldset><legend>أفراد الأسرة (الاسم – القرابة – الهوية – تاريخ الميلاد)</legend><div id="ml">${f.members.map(mrow).join('')}</div><button type="button" onclick="ml.insertAdjacentHTML('beforeend',mrow())">+ فرد</button></fieldset>
+<fieldset><legend>ما استفادت منه الأسرة خلال النزوح في المخيم</legend><datalist id="il">${ITEMS.map(i=>`<option value="${i}">`).join('')}</datalist><div id="bl">${f.benefits.map(brow).join('')}</div><button type="button" onclick="bl.insertAdjacentHTML('beforeend',brow())">+ مساعدة / طقم مستلم</button></fieldset>
+<div class="er" id="er"></div><div class="ac"><button class="p" onclick="saveF()">حفظ</button><button onclick="dlg.close()">إلغاء</button></div>`;
+$('dlg').showModal()}
+function saveF(){const v=i=>nd($('a'+i).value);const er=m=>{$('er').textContent=m;return 0};
+const d={first:v(1),father:v(2),grand:v(3),last:v(4),nid:v(5),phone:v(6),social:v(7),tent:v(8),status:v(9)};
+if(!d.first||!d.father||!d.grand||!d.last)return er('يرجى إدخال الاسم واسم الأب واسم الجد واسم العائلة');
+if(!/^\d{9}$/.test(d.nid))return er('رقم الهوية يجب أن يتكون من 9 أرقام');
+if(!/^\d{10}$/.test(d.phone))return er('رقم الجوال يجب أن يتكون من 10 أرقام');
+d.wife=$('b1').value.trim();d.headBirth=$('b3').value;d.wifeBirth=$('b4').value;d.wifeNid=nd($('b2').value);
+if(d.wifeNid&&!/^\d{9}$/.test(d.wifeNid))return er('رقم هوية الزوجة يجب أن يتكون من 9 أرقام');
+if(S.families.some(f=>f.nid==d.nid&&f.id!=editId))return er('رقم الهوية مسجل مسبقاً لأسرة أخرى');
+d.members=[];for(const r of document.querySelectorAll('#ml .r')){const i=r.querySelectorAll('input'),n=i[0].value.trim(),id=nd(i[2].value);if(!n&&!id)continue;
+if(!n)return er('يرجى إدخال اسم الفرد');if(id&&!/^\d{9}$/.test(id))return er('هوية الفرد يجب أن تكون 9 أرقام');d.members.push({name:n,rel:i[1].value.trim(),nid:id,birth:i[3].value})}
+d.benefits=[];for(const r of document.querySelectorAll('#bl .r')){const i=r.querySelectorAll('input');if(i[0].value.trim())d.benefits.push({item:i[0].value.trim(),date:i[1].value,note:i[2].value.trim()})}
+if(editId)Object.assign(S.families.find(f=>f.id==editId),d);else{d.id='f'+Date.now();d.created=today();S.families.push(d)}
+save();$('dlg').close();draw()}
+
+function pd(v){v=nd(v);let x;if(/^\d{4}-\d{1,2}-\d{1,2}$/.test(v)){x=v.split('-')}else if(x=v.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})$/)){x=[x[3],x[2],x[1]]}else return '';return x[0]+'-'+x[1].padStart(2,'0')+'-'+x[2].padStart(2,'0')}
+function socOf(v){v=String(v||'').trim();return SOC.find(x=>v.includes(x.split('/')[0].split(' ')[0]))||'أخرى'}
+function fixPh(v){v=nd(v);return /^5\d{8}$/.test(v)?'0'+v:v}
+$('xi').onchange=e=>{const file=e.target.files[0];e.target.value='';if(!file)return;if(!window.XLSX){alert('تعذر تحميل مكتبة Excel');return}
+const r=new FileReader();r.onload=()=>{try{const wb=XLSX.read(r.result,{type:'array'});const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:false,defval:''});
+let m={name:0,nid:1,phone:2,social:3,size:4,wife:5,wifeNid:6,headBirth:7,wifeBirth:8},start=0;
+const h0=(rows[0]||[]).map(c=>String(c).trim());
+if(h0.some(c=>c.includes('الاسم'))&&h0.some(c=>c.includes('هوية'))){start=1;const t={};h0.forEach((c,k)=>{if(c.includes('ميلاد'))t[c.includes('زوجة')?'wifeBirth':'headBirth']=k;else if(c.includes('زوج'))t[c.includes('هوية')?'wifeNid':'wife']=k;else if(c.includes('جوال'))t.phone=k;else if(c.includes('اجتماع'))t.social=k;else if(c.includes('عدد')||c.includes('أفراد'))t.size=k;else if(c.includes('هوية'))t.nid=k;else if(c.includes('الاسم'))t.name=k});m=Object.assign({},t)}
+const g=(row,k)=>k===undefined?'':row[k];
+let add=0,bad=[];const seen=new Set(S.families.map(f=>f.nid));
+rows.slice(start).forEach((row,i)=>{if(row.every(c=>!String(c).trim()))return;
+const nm=String(g(row,m.name)||'').trim(),nid=nd(g(row,m.nid)),wn=nd(g(row,m.wifeNid)),ph=fixPh(g(row,m.phone)),parts=nm.split(/\s+/).filter(Boolean),ln='سطر '+(i+start+1)+': ';
+if(parts.length<2){bad.push(ln+'الاسم غير مكتمل');return}
+if(!/^\d{9}$/.test(nid)){bad.push(ln+'رقم الهوية غير صحيح');return}
+if(seen.has(nid)){bad.push(ln+'الهوية مكررة');return}
+if(ph&&!/^\d{10}$/.test(ph)){bad.push(ln+'رقم الجوال غير صحيح');return}
+if(wn&&!/^\d{9}$/.test(wn)){bad.push(ln+'هوية الزوجة غير صحيحة');return}
+seen.add(nid);const sz=parseInt(nd(g(row,m.size)))||1;
+S.families.push({id:'f'+Date.now()+'_'+i,first:parts[0],father:parts[1]||'',grand:parts[2]||'',last:parts.slice(3).join(' '),nid,phone:ph,social:socOf(g(row,m.social)),tent:'',status:'pending',members:[],benefits:[],size:sz,wife:String(g(row,m.wife)||'').trim(),wifeNid:wn,headBirth:pd(g(row,m.headBirth)),wifeBirth:pd(g(row,m.wifeBirth)),created:today()});add++});
+save();draw();alert('تمت إضافة '+add+' أسرة (قيد الانتظار)'+(bad.length?'\nتم تجاهل '+bad.length+' سطر:\n'+bad.slice(0,10).join('\n')+(bad.length>10?'\n...':''):''))}catch(x){alert('تعذر قراءة الملف')}};r.readAsArrayBuffer(file)};
+async function saveFile(name,data){try{const d=window.claude&&claude.use?await claude.use('downloads'):null;if(d){await d.save({filename:name,data});return true}
+const u=URL.createObjectURL(new Blob([data]));const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);return true}catch(e){if(!(e&&e.code==='declined'))alert('تعذّر حفظ الملف');return false}}
+function exp(){saveFile('camp-backup-'+today()+'.json',JSON.stringify(S))}
+function xl(){if(!window.XLSX){alert('تعذر تحميل مكتبة Excel');return}
+const fs=$('fs').value,so=$('fso').value,mn=parseInt(nd($('nmin').value))||0,mx=parseInt(nd($('nmax').value))||0,q=nd($('q').value).toLowerCase();
+const L=S.families.filter(f=>(!fs||f.status==fs)&&(!so||f.social==so)&&(!mn||cnt(f)>=mn)&&(!mx||cnt(f)<=mx)&&(!q||(full(f)+f.nid+f.phone+(f.tent||'')).toLowerCase().includes(q)));
+if(!L.length){alert('لا توجد أسر للتصدير');return}
+const rows=[['الاسم رباعي','رقم الهوية','رقم الجوال','الحالة الاجتماعية','عدد أفراد الأسرة','اسم الزوجة','رقم هوية الزوجة','تاريخ ميلاد الزوج','تاريخ ميلاد الزوجة']].concat(L.map(f=>[full(f),f.nid,f.phone,f.social,cnt(f),f.wife||'',f.wifeNid||'',f.headBirth||'',f.wifeBirth||'']));
+const ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=[{wch:32},{wch:14},{wch:14},{wch:22},{wch:16},{wch:28},{wch:16},{wch:16},{wch:16}];ws['!views']=[{RTL:true}];
+const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'الأسر');
+saveFile('camp-families-'+today()+'.xlsx',XLSX.write(wb,{bookType:'xlsx',type:'array'}))}
+$('imp').onchange=e=>{const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result);if(!Array.isArray(j.families))throw 0;if(confirm('سيتم استبدال البيانات الحالية. متابعة؟')){S={families:j.families,archive:j.archive||[]};save();draw()}}catch(x){alert('ملف غير صالح')}};r.readAsText(e.target.files[0])};
+/* ===== تسجيل الدخول ===== */
+const AK='camp_auth';let authed=false,fails=0,lockTill=0,idle=null;
+function gA(){try{return JSON.parse(localStorage.getItem(AK))}catch(e){return null}}
+const hx=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+async function hp(p,salt){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(p),'PBKDF2',false,['deriveBits']);return hx(await crypto.subtle.deriveBits({name:'PBKDF2',salt:new TextEncoder().encode(salt),iterations:100000,hash:'SHA-256'},k,256))}
+function showLogin(){authed=false;try{sessionStorage.removeItem('camp_ses')}catch(e){}
+document.querySelectorAll('dialog[open]').forEach(d=>d.close());$('app').style.display='none';$('lg').style.display='flex';
+const a=gA(),k='onkeydown="if(event.key===\'Enter\')doLogin()"';
+$('lc').innerHTML=`<h2>🏕️ إدارة المخيم</h2><p class="em2">${a?'سجّل الدخول للمتابعة':'أول استخدام: أنشئ حساب المسؤول لحماية البيانات'}</p>
+<label>اسم المستخدم</label><input id="lu" autocomplete="username" ${k}><label>كلمة المرور${a?'':' (6 أحرف على الأقل)'}</label><input id="lp" type="password" autocomplete="${a?'current-password':'new-password'}" ${k}>
+${a?'':`<label>تأكيد كلمة المرور</label><input id="lp2" type="password" autocomplete="new-password" ${k}>`}
+<div class="er" id="le"></div><button class="p" onclick="doLogin()">${a?'دخول':'إنشاء الحساب'}</button>${a?'<a onclick="forgot()">نسيت كلمة المرور؟</a>':''}`;
+setTimeout(()=>{const u=$('lu');u&&u.focus()},50)}
+function unlock(){authed=true;try{sessionStorage.setItem('camp_ses','1')}catch(e){}$('lg').style.display='none';$('app').style.display='block';draw();bump()}
+async function doLogin(){const u=$('lu').value.trim(),p=$('lp').value,er=m=>{$('le').textContent=m};if(!(crypto&&crypto.subtle))return er('المتصفح لا يدعم التشفير المطلوب');
+const a=gA();
+if(!a){if(!u)return er('أدخل اسم المستخدم');if(p.length<6)return er('كلمة المرور 6 أحرف على الأقل');if(p!==$('lp2').value)return er('تأكيد كلمة المرور غير مطابق');
+const salt=hx(crypto.getRandomValues(new Uint8Array(16)));try{localStorage.setItem(AK,JSON.stringify({u,salt,h:await hp(p,salt)}))}catch(e){return er('تعذّر حفظ الحساب في هذا المتصفح')}return unlock()}
+if(Date.now()<lockTill)return er('محاولات كثيرة، انتظر '+Math.ceil((lockTill-Date.now())/1000)+' ثانية');
+if(u===a.u&&await hp(p,a.salt)===a.h){fails=0;return unlock()}
+fails++;if(fails>=5){fails=0;lockTill=Date.now()+30000;return er('محاولات كثيرة، انتظر 30 ثانية')}er('اسم المستخدم أو كلمة المرور غير صحيحة')}
+function logout(){clearTimeout(idle);showLogin()}
+function bump(){clearTimeout(idle);if(authed)idle=setTimeout(logout,15*60*1000)}
+['click','keydown','touchstart','mousemove'].forEach(e=>document.addEventListener(e,()=>{if(authed)bump()},{passive:true}));
+function forgot(){if(!confirm('لا يمكن استرجاع كلمة المرور. إعادة الضبط ستحذف حساب الدخول وكل بيانات الأسر من هذا المتصفح. (يمكنك استعادة بياناتك لاحقاً إن كانت لديك نسخة احتياطية). هل تريد المتابعة؟'))return;if(!confirm('تأكيد نهائي: حذف كل البيانات؟'))return;
+try{localStorage.removeItem(AK);localStorage.removeItem(KEY)}catch(e){}S={families:[],archive:[]};sel.clear();showLogin()}
+function openPw(){['p0','p1','p2'].forEach(i=>$(i).value='');$('pe').textContent='';$('pw').showModal()}
+async function chPw(){const a=gA(),er=m=>{$('pe').textContent=m};if(await hp($('p0').value,a.salt)!==a.h)return er('كلمة المرور الحالية غير صحيحة');const n=$('p1').value;if(n.length<6)return er('الجديدة 6 أحرف على الأقل');if(n!==$('p2').value)return er('التأكيد غير مطابق');
+const salt=hx(crypto.getRandomValues(new Uint8Array(16)));try{localStorage.setItem(AK,JSON.stringify({u:a.u,salt,h:await hp(n,salt)}))}catch(e){return er('تعذّر الحفظ')}$('pw').close();alert('تم تغيير كلمة المرور')}
+let ok=false;try{ok=sessionStorage.getItem('camp_ses')==='1'&&!!gA()}catch(e){}
+ok?unlock():showLogin();
+</script>
+</body>
+</html>
