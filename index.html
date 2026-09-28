@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>إدارة المخيم</title>
+<script>try{var t=localStorage.getItem("camp_theme")||"light";if(t!="auto")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>
 :root{--bg:#f5f3ee;--card:#fff;--tx:#1f2a24;--mu:#6b756f;--pr:#1d6b4f;--pr2:#e3f1ea;--bd:#dcd8cd;--dn:#b3392f;--wn:#b9770e;--wn2:#fbf0dc;
@@ -58,7 +59,7 @@ table{width:100%;border-collapse:collapse;font-size:14px;background:var(--card)}
 <body>
 <div class="w" id="app" style="display:none">
 <header><h1>🏕️ إدارة المخيم – سجل الأسر</h1>
-<div><button class="p" onclick="xl()">📊 تصدير Excel</button> <button class="p" onclick="$('xi').click()">📥 استيراد Excel</button> <button onclick="exp()">نسخة احتياطية</button> <button onclick="document.getElementById('imp').click()">استعادة نسخة</button> <button onclick="openPw()">🔑 كلمة المرور</button> <button class="d" onclick="logout()">🔒 خروج</button><input type="file" id="xi" accept=".xlsx,.xls,.csv" hidden><input type="file" id="imp" accept=".json" hidden></div></header>
+<div><span id="ss" style="font-size:12px;color:var(--mu)"></span> <button class="tbtn" onclick="thm()"></button> <button class="p" onclick="xl()">📊 تصدير Excel</button> <button class="p" onclick="$('xi').click()">📥 استيراد Excel</button> <button onclick="exp()">نسخة احتياطية</button> <button onclick="document.getElementById('imp').click()">استعادة نسخة</button> <button onclick="openPw()">🔑 كلمة المرور</button> <button class="d" onclick="logout()">🔒 خروج</button><input type="file" id="xi" accept=".xlsx,.xls,.csv" hidden><input type="file" id="imp" accept=".json" hidden></div></header>
 <div class="st" id="st"></div>
 <div class="tabs"><button id="t1" class="on" onclick="tab(1)">الأسر</button><button id="t3" onclick="tab(3)">الأفراد حسب العمر</button><button id="t2" onclick="tab(2)">سجل الأسر المحذوفة</button></div>
 <div class="bar" id="bar">
@@ -75,7 +76,7 @@ table{width:100%;border-collapse:collapse;font-size:14px;background:var(--card)}
 <div id="list"></div>
 </div>
 
-<div id="lg"><div class="c" id="lc"></div></div>
+<div id="lg"><div class="c" id="lc"><p class="em2">جارٍ التحميل...</p></div></div>
 <dialog id="pw"><h3 style="margin-top:0">تغيير كلمة المرور</h3><label>كلمة المرور الحالية</label><input id="p0" type="password" autocomplete="current-password"><label>كلمة المرور الجديدة (6 أحرف على الأقل)</label><input id="p1" type="password" autocomplete="new-password"><label>تأكيد الجديدة</label><input id="p2" type="password" autocomplete="new-password"><div class="er" id="pe"></div><div class="ac"><button class="p" onclick="chPw()">حفظ</button><button onclick="pw.close()">إلغاء</button></div></dialog>
 <dialog id="dlg"><div id="fm"></div></dialog>
 <dialog id="db"><h3 style="margin-top:0">تصدير المحددين مع الاستفادة</h3><p id="bn" style="margin:0 0 8px"></p>
@@ -86,12 +87,17 @@ table{width:100%;border-collapse:collapse;font-size:14px;background:var(--card)}
 <dialog id="dd"><h3 style="margin-top:0">حذف الأسرة</h3><p id="dn"></p><label>سبب الحذف</label><input id="rs" placeholder="مثال: غادرت المخيم"><div class="ac"><button class="d" onclick="confDel()">تأكيد الحذف</button><button onclick="dd.close()">إلغاء</button></div></dialog>
 
 <script src="xlsx.full.min.js"></script>
+<script src="firebase-app-compat.js"></script>
+<script src="firebase-auth-compat.js"></script>
+<script src="firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 const KEY='camp_v1';
 let S={families:[],archive:[]},view=1,editId=null,delId=null;
 try{const x=localStorage.getItem(KEY);if(x)S=JSON.parse(x)}catch(e){}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const LEG0=S;
+function save(){if(cloud){cloudSave();return}try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const nd=s=>String(s||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).trim();
 const sel=new Set();let vis=[];
@@ -208,37 +214,73 @@ const ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=[{wch:32},{wch:14},{wch:14},{
 const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'الأسر');
 saveFile('camp-families-'+today()+'.xlsx',XLSX.write(wb,{bookType:'xlsx',type:'array'}))}
 $('imp').onchange=e=>{const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result);if(!Array.isArray(j.families))throw 0;if(confirm('سيتم استبدال البيانات الحالية. متابعة؟')){S={families:j.families,archive:j.archive||[]};save();draw()}}catch(x){alert('ملف غير صالح')}};r.readAsText(e.target.files[0])};
+/* ===== المظهر ===== */
+let th='light';try{th=localStorage.getItem('camp_theme')||'light'}catch(e){}
+function thApply(){if(th=='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',th);document.querySelectorAll('.tbtn').forEach(b=>b.textContent=th=='light'?'☀️ فاتح':th=='dark'?'🌙 داكن':'🌓 تلقائي')}
+function thm(){th=th=='light'?'dark':th=='dark'?'auto':'light';try{localStorage.setItem('camp_theme',th)}catch(e){}thApply()}
+/* ===== السحابة (Firebase) ===== */
+const AK='camp_auth',CFG=window.FIREBASE_CONFIG||{},cloud=!!(CFG.apiKey&&window.firebase);
+let authed=false,fails=0,lockTill=0,idle=null,fauth,fdb,synced={fam:{},arc:{}},unsub=[],got={},legacy=null;
+const em=u=>u.includes('@')?u:u+'@camp.local';
+function setSS(t){const e=$('ss');if(e)e.textContent=t}
+function netTxt(){setSS(navigator.onLine?'☁️ متزامن مع السحابة':'☁️ بدون اتصال – سيُرفع التعديل تلقائياً عند عودة الاتصال')}
+addEventListener('online',()=>{if(cloud&&authed)netTxt()});addEventListener('offline',()=>{if(cloud&&authed)netTxt()});
+function initCloud(){firebase.initializeApp(CFG);fauth=firebase.auth();fdb=firebase.firestore();try{fdb.enablePersistence({synchronizeTabs:true}).catch(()=>{})}catch(e){}}
+function stopSync(){unsub.forEach(f=>f());unsub=[]}
+function startSync(){stopSync();try{if(!localStorage.getItem('camp_migrated')&&LEG0.families&&(LEG0.families.length||(LEG0.archive||[]).length))legacy=LEG0}catch(e){}
+S={families:[],archive:[]};synced={fam:{},arc:{}};got={};sel.clear();
+[['families','fam'],['archive','arc']].forEach(([col,k])=>unsub.push(fdb.collection(col).onSnapshot({includeMetadataChanges:true},sn=>{const arr=S[col];
+sn.docChanges().forEach(ch=>{const id=ch.doc.id,i=arr.findIndex(x=>x.id==id);if(ch.type=='removed'){if(i>=0)arr.splice(i,1);delete synced[k][id]}else{const d=ch.doc.data();d.id=id;if(i>=0)arr[i]=d;else arr.push(d);synced[k][id]=JSON.stringify(d)}});
+arr.sort(col=='archive'?(a,b)=>String(b.deletedAt||'').localeCompare(String(a.deletedAt||'')):(a,b)=>String(a.created||'').localeCompare(String(b.created||'')));
+if(!sn.metadata.fromCache)got[col]=1;draw();if(got.families&&got.archive)migrate()},e=>setSS('⚠️ تعذّرت المزامنة: '+(e.code||'')))));netTxt()}
+function migrate(){if(!legacy)return;const l=legacy;legacy=null;try{localStorage.setItem('camp_migrated','1')}catch(e){}
+if(S.families.length||S.archive.length||!(l.families.length||l.archive.length))return;
+if(confirm('توجد بيانات محفوظة على هذا الجهاز ('+l.families.length+' أسرة) والسحابة فارغة. هل ترفعها إلى السحابة لتظهر على كل الأجهزة؟')){S.families=l.families;S.archive=l.archive||[];save();draw()}}
+function cloudSave(){const ops=[];[['families','fam'],['archive','arc']].forEach(([col,k])=>{const cur={};S[col].forEach(x=>cur[x.id]=x);
+for(const id in cur){const str=JSON.stringify(cur[id]);if(synced[k][id]!==str){ops.push([col,id,JSON.parse(str)]);synced[k][id]=str}}
+for(const id in synced[k])if(!(id in cur)){ops.push([col,id,null]);delete synced[k][id]}});
+for(let i=0;i<ops.length;i+=400){const b=fdb.batch();ops.slice(i,i+400).forEach(([c,id,d])=>{const r=fdb.collection(c).doc(id);d?b.set(r,d):b.delete(r)});b.commit().catch(e=>setSS('⚠️ فشل الحفظ في السحابة: '+(e.code||'')))}}
 /* ===== تسجيل الدخول ===== */
-const AK='camp_auth';let authed=false,fails=0,lockTill=0,idle=null;
 function gA(){try{return JSON.parse(localStorage.getItem(AK))}catch(e){return null}}
 const hx=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
 async function hp(p,salt){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(p),'PBKDF2',false,['deriveBits']);return hx(await crypto.subtle.deriveBits({name:'PBKDF2',salt:new TextEncoder().encode(salt),iterations:100000,hash:'SHA-256'},k,256))}
-function showLogin(){authed=false;try{sessionStorage.removeItem('camp_ses')}catch(e){}
-document.querySelectorAll('dialog[open]').forEach(d=>d.close());$('app').style.display='none';$('lg').style.display='flex';
-const a=gA(),k='onkeydown="if(event.key===\'Enter\')doLogin()"';
-$('lc').innerHTML=`<h2>🏕️ إدارة المخيم</h2><p class="em2">${a?'سجّل الدخول للمتابعة':'أول استخدام: أنشئ حساب المسؤول لحماية البيانات'}</p>
-<label>اسم المستخدم</label><input id="lu" autocomplete="username" ${k}><label>كلمة المرور${a?'':' (6 أحرف على الأقل)'}</label><input id="lp" type="password" autocomplete="${a?'current-password':'new-password'}" ${k}>
+function showLogin(){authed=false;clearTimeout(idle);document.querySelectorAll('dialog[open]').forEach(d=>d.close());$('app').style.display='none';$('lg').style.display='flex';
+let a;if(cloud){stopSync();S={families:[],archive:[]};sel.clear();a=true}else{try{sessionStorage.removeItem('camp_ses')}catch(e){}a=gA()}
+const k='onkeydown="if(event.key===\'Enter\')doLogin()"';
+$('lc').innerHTML=`<button class="tbtn" onclick="thm()" style="float:left"></button><h2>🏕️ إدارة المخيم</h2><p class="em2">${cloud?'سجّل الدخول بحساب المسؤول':a?'سجّل الدخول للمتابعة':'أول استخدام: أنشئ حساب المسؤول لحماية البيانات'}</p>
+<label>${cloud?'اسم المستخدم أو البريد الإلكتروني':'اسم المستخدم'}</label><input id="lu" autocomplete="username" ${k}><label>كلمة المرور${a?'':' (6 أحرف على الأقل)'}</label><input id="lp" type="password" autocomplete="${a?'current-password':'new-password'}" ${k}>
 ${a?'':`<label>تأكيد كلمة المرور</label><input id="lp2" type="password" autocomplete="new-password" ${k}>`}
 <div class="er" id="le"></div><button class="p" onclick="doLogin()">${a?'دخول':'إنشاء الحساب'}</button>${a?'<a onclick="forgot()">نسيت كلمة المرور؟</a>':''}`;
-setTimeout(()=>{const u=$('lu');u&&u.focus()},50)}
+thApply();setTimeout(()=>{const u=$('lu');u&&u.focus()},50)}
 function unlock(){authed=true;try{sessionStorage.setItem('camp_ses','1')}catch(e){}$('lg').style.display='none';$('app').style.display='block';draw();bump()}
-async function doLogin(){const u=$('lu').value.trim(),p=$('lp').value,er=m=>{$('le').textContent=m};if(!(crypto&&crypto.subtle))return er('المتصفح لا يدعم التشفير المطلوب');
+function unlockCloud(){authed=true;$('lg').style.display='none';$('app').style.display='block';startSync();draw();bump()}
+async function doLogin(){const u=$('lu').value.trim(),p=$('lp').value,er=m=>{$('le').style.color='';$('le').textContent=m};
+if(cloud){if(!u||!p)return er('أدخل اسم المستخدم وكلمة المرور');$('le').textContent='جارٍ الدخول...';
+try{await fauth.signInWithEmailAndPassword(em(u),p)}catch(e){er(e.code=='auth/too-many-requests'?'محاولات كثيرة، حاول لاحقاً':e.code=='auth/network-request-failed'?'لا يوجد اتصال بالإنترنت':'اسم المستخدم أو كلمة المرور غير صحيحة')}return}
+if(!(crypto&&crypto.subtle))return er('المتصفح لا يدعم التشفير المطلوب');
 const a=gA();
 if(!a){if(!u)return er('أدخل اسم المستخدم');if(p.length<6)return er('كلمة المرور 6 أحرف على الأقل');if(p!==$('lp2').value)return er('تأكيد كلمة المرور غير مطابق');
 const salt=hx(crypto.getRandomValues(new Uint8Array(16)));try{localStorage.setItem(AK,JSON.stringify({u,salt,h:await hp(p,salt)}))}catch(e){return er('تعذّر حفظ الحساب في هذا المتصفح')}return unlock()}
 if(Date.now()<lockTill)return er('محاولات كثيرة، انتظر '+Math.ceil((lockTill-Date.now())/1000)+' ثانية');
 if(u===a.u&&await hp(p,a.salt)===a.h){fails=0;return unlock()}
 fails++;if(fails>=5){fails=0;lockTill=Date.now()+30000;return er('محاولات كثيرة، انتظر 30 ثانية')}er('اسم المستخدم أو كلمة المرور غير صحيحة')}
-function logout(){clearTimeout(idle);showLogin()}
+function logout(){clearTimeout(idle);if(cloud)fauth.signOut();else showLogin()}
 function bump(){clearTimeout(idle);if(authed)idle=setTimeout(logout,15*60*1000)}
 ['click','keydown','touchstart','mousemove'].forEach(e=>document.addEventListener(e,()=>{if(authed)bump()},{passive:true}));
-function forgot(){if(!confirm('لا يمكن استرجاع كلمة المرور. إعادة الضبط ستحذف حساب الدخول وكل بيانات الأسر من هذا المتصفح. (يمكنك استعادة بياناتك لاحقاً إن كانت لديك نسخة احتياطية). هل تريد المتابعة؟'))return;if(!confirm('تأكيد نهائي: حذف كل البيانات؟'))return;
+function forgot(){if(cloud){const u=$('lu').value.trim(),e=$('le');e.style.color='';if(!u.includes('@')){e.textContent='اكتب بريدك الإلكتروني في الحقل أعلاه ثم اضغط هنا، أو اطلب من المسؤول إعادة ضبط كلمة مرورك';return}
+fauth.sendPasswordResetEmail(u).then(()=>{e.style.color='var(--pr)';e.textContent='تم إرسال رابط إعادة الضبط إلى بريدك'}).catch(()=>{e.textContent='تعذّر الإرسال، تأكد من البريد'});return}
+if(!confirm('لا يمكن استرجاع كلمة المرور. إعادة الضبط ستحذف حساب الدخول وكل بيانات الأسر من هذا المتصفح. (يمكنك استعادة بياناتك لاحقاً إن كانت لديك نسخة احتياطية). هل تريد المتابعة؟'))return;if(!confirm('تأكيد نهائي: حذف كل البيانات؟'))return;
 try{localStorage.removeItem(AK);localStorage.removeItem(KEY)}catch(e){}S={families:[],archive:[]};sel.clear();showLogin()}
 function openPw(){['p0','p1','p2'].forEach(i=>$(i).value='');$('pe').textContent='';$('pw').showModal()}
-async function chPw(){const a=gA(),er=m=>{$('pe').textContent=m};if(await hp($('p0').value,a.salt)!==a.h)return er('كلمة المرور الحالية غير صحيحة');const n=$('p1').value;if(n.length<6)return er('الجديدة 6 أحرف على الأقل');if(n!==$('p2').value)return er('التأكيد غير مطابق');
+async function chPw(){const er=m=>{$('pe').textContent=m},n=$('p1').value;
+if(cloud){const u=fauth.currentUser;try{await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email,$('p0').value))}catch(e){return er('كلمة المرور الحالية غير صحيحة')}
+if(n.length<6)return er('الجديدة 6 أحرف على الأقل');if(n!==$('p2').value)return er('التأكيد غير مطابق');
+try{await u.updatePassword(n)}catch(e){return er('تعذّر التغيير: '+(e.code||''))}$('pw').close();alert('تم تغيير كلمة المرور');return}
+const a=gA();if(await hp($('p0').value,a.salt)!==a.h)return er('كلمة المرور الحالية غير صحيحة');if(n.length<6)return er('الجديدة 6 أحرف على الأقل');if(n!==$('p2').value)return er('التأكيد غير مطابق');
 const salt=hx(crypto.getRandomValues(new Uint8Array(16)));try{localStorage.setItem(AK,JSON.stringify({u:a.u,salt,h:await hp(n,salt)}))}catch(e){return er('تعذّر الحفظ')}$('pw').close();alert('تم تغيير كلمة المرور')}
-let ok=false;try{ok=sessionStorage.getItem('camp_ses')==='1'&&!!gA()}catch(e){}
-ok?unlock():showLogin();
+thApply();
+if(cloud){initCloud();Promise.resolve(fauth.setPersistence(firebase.auth.Auth.Persistence.SESSION)).catch(()=>{}).then(()=>fauth.onAuthStateChanged(u=>u?unlockCloud():showLogin()))}
+else{let ok=false;try{ok=sessionStorage.getItem('camp_ses')==='1'&&!!gA()}catch(e){}ok?unlock():showLogin()}
 </script>
 </body>
 </html>
